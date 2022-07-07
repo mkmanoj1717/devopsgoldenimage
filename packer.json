@@ -1,0 +1,43 @@
+{
+"variables": {
+"instance_size": "t2.small",
+"ami_name": "ami-jenkins",
+"base_ami": "ami-0mefsf42e63bba657",
+"ssh_username": "ubuntu",
+"vpc_id": "",
+"subnet_id": ""
+},
+"builders": [
+{
+"type": "amazon-ebs",
+"region": "us-west-1",                       
+"source_ami": "{{user `base_ami`}}",
+"instance_type": "{{user `instance_size`}}",
+"ssh_username": "{{user `ssh_username`}}",
+"ssh_timeout": "20m",
+"ami_name": "{{user `ami_name`}}",
+"ssh_pty": "true",
+"vpc_id": "{{user `vpc_id`}}",
+"subnet_id": "{{user `subnet_id`}}",
+"tags": {
+"Name": "Jenkins_ami",                       
+"BuiltBy": "Packer"
+}
+}
+],
+"description": "AWS image",
+"provisioners": [
+{
+"type": "shell",
+"inline": [
+"sudo apt-get update -y",
+"sudo apt-get install openjdk-8-jdk -y",
+"wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -",
+"sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'",
+"sudo apt-get update -y",
+"sudo apt install jenkins -y",
+"sudo systemctl start jenkins"
+]
+}
+]
+}
